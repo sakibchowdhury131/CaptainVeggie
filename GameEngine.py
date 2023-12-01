@@ -156,10 +156,21 @@ class GameEngine:
         self.initCaptain()
         self.initRabbits()
 
+        '''
+        ## use this code section to display the field distribution
+        field_size_height = len(self._field)
+        field_size_width = len(self._field[0])
         
+        for i in range(field_size_height):
+            for j in range(field_size_width):
+                if self._field[i][j] == None:
+                    print('0', end=' ')
+                else:
+                    print(self._field[i][j].getFieldInhabitant(), end=' ')
+            print()
+        '''
+
 
 # for debugging
-engine = GameEngine()
-engine.initVeggies()
-engine.initCaptain()
-engine.initRabbits()
+# engine = GameEngine()
+# engine.initializeGame()
