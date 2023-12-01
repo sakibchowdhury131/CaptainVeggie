@@ -2,6 +2,7 @@ import os
 import random
 from Veggie import Veggie
 from Captain import Captain
+from Rabbit import Rabbit
 
 class GameEngine:
 
@@ -114,8 +115,42 @@ class GameEngine:
         '''
 
 
+    def initRabbits(self):
+        counter = self.__NUMBEROFRABBITS
+        field_size_height = len(self._field)
+        field_size_width = len(self._field[0])
+
+        while counter > 0:
+            location_h = random.randrange(0, field_size_height)
+            location_w = random.randrange(0, field_size_width)
+
+
+            # If a chosen random location is occupied by another object, repeatedly 
+            # choose a new location until an empty location is found
+            while self._field[location_h][location_w] != None:
+                location_h = random.randrange(0, field_size_height)
+                location_w = random.randrange(0, field_size_width)
+            
+            rabbit = Rabbit(location_h, location_w)
+            self._field[location_h][location_w] = rabbit
+            self._rabbits_in_the_field.append(rabbit)
+            counter -= 1
+            
+        '''
+        ## use this code section to display the field distribution
+
+        
+        for i in range(field_size_height):
+            for j in range(field_size_width):
+                if self._field[i][j] == None:
+                    print('0', end=' ')
+                else:
+                    print(self._field[i][j].getFieldInhabitant(), end=' ')
+            print()
+        '''
 
 # for debugging
-# engine = GameEngine()
-# engine.initVeggies()
-# engine.initCaptain()
+engine = GameEngine()
+engine.initVeggies()
+engine.initCaptain()
+engine.initRabbits()
