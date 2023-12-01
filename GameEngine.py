@@ -149,6 +149,15 @@ class GameEngine:
             print()
         '''
 
+
+    
+    def initializeGame(self):
+        self.initVeggies()
+        self.initCaptain()
+        self.initRabbits()
+
+        
+
 # for debugging
 engine = GameEngine()
 engine.initVeggies()
