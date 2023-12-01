@@ -1,6 +1,7 @@
 import os
 import random
 from Veggie import Veggie
+from Captain import Captain
 
 class GameEngine:
 
@@ -80,7 +81,41 @@ class GameEngine:
         '''
 
 
+    def initCaptain(self):
+
+        field_size_height = len(self._field)
+        field_size_width = len(self._field[0])
+
+        location_h = random.randrange(0, field_size_height)
+        location_w = random.randrange(0, field_size_width)
 
 
-engine = GameEngine()
-engine.initVeggies()
+        # If a chosen random location is occupied by other Veggie objects, repeatedly 
+        # choose a new location until an empty location is found
+        while self._field[location_h][location_w] != None:
+            location_h = random.randrange(0, field_size_height)
+            location_w = random.randrange(0, field_size_width)
+        
+        self._captain = Captain(location_h, location_w)
+        self._field[location_h][location_w] = self._captain
+
+        '''
+        ## use this code section to display the field distribution
+
+
+        for i in range(field_size_height):
+            for j in range(field_size_width):
+                if self._field[i][j] == None:
+                    print('0', end=' ')
+                else:
+                    print(self._field[i][j].getFieldInhabitant(), end=' ')
+            print()
+
+        '''
+
+
+
+# for debugging
+# engine = GameEngine()
+# engine.initVeggies()
+# engine.initCaptain()
