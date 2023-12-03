@@ -1,8 +1,9 @@
 import os
 import random
 from Veggie import Veggie
-from Captain import Captain
+from captain import captain
 from Rabbit import Rabbit
+
 
 class GameEngine:
 
@@ -97,7 +98,7 @@ class GameEngine:
             location_h = random.randrange(0, field_size_height)
             location_w = random.randrange(0, field_size_width)
         
-        self._captain = Captain(location_h, location_w)
+        self._captain = captain(location_h, location_w)
         self._field[location_h][location_w] = self._captain
 
         '''
@@ -170,7 +171,6 @@ class GameEngine:
             print()
         '''
 
-
-# for debugging
-# engine = GameEngine()
-# engine.initializeGame()
+        def remainingVeggies(self) -> int:
+            count = sum(row.count(None) for row in self._field)
+            return self.NUMBEROFVEGGIES - count
