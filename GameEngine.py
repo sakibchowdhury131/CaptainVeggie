@@ -1,7 +1,7 @@
 import os
 import random
 from Veggie import Veggie
-from captain import captain
+from captain import Captain
 from Rabbit import Rabbit
 
 
@@ -171,30 +171,71 @@ class GameEngine:
             print()
         '''
 
-        def remainingVeggies(self) -> int:
-            count = sum(row.count(None) for row in self._field)
-            return self.NUMBEROFVEGGIES - count
+    def remainingVeggies(self):
+        count = 0
+        for row in self._field:
+            for item in row:
+                if isinstance(item, Veggie):
+                    count += 1
+        return count
+
+    def intro(self):
+        print("Welcome to the Veggie Harvest Game!")
+        print("The goal of the game is to harvest as many vegetables as you can while avoiding rabbits.")
+        print("Here are the possible vegetables and their symbols:")
+        for veggie in self._all_possible_vegetables:
+            print(f"Symbol: {veggie.getSymbol()}, Name: {veggie.getName()}, Points: {veggie.getPointValue()}")
+        print(f"Captain Veggie symbol: {self._captain.getSymbol()}")
+        print("Rabbit symbol: R")
+        print("Let the harvest begin!")
+
+    def printField(self):
+        for row in self._field:
+            for item in row:
+                if item is None:
+                    print('0', end=' ')
+                else:
+                    print(item.getFieldInhabitant(), end=' ')
+            print()
+
+    def getScore(self):
+        return self._score
+
+    def moveRabbits(self):
+        for rabbit in self._rabbits_in_the_field:
+            rabbit.move(self._field)
+
+    def moveCptVertical(self, movement):
+        self._captain.moveVertical(movement, self._field, self._all_possible_vegetables, self._score)
+
+    def moveCptHorizontal(self, movement):
+        self._captain.moveHorizontal(movement, self._field, self._all_possible_vegetables, self._score)
+
+    def moveCaptain(self):
+        direction = input("Enter the direction to move the Captain (W for Up, S for Down, A for Left, D for Right): ").upper()
+        if direction == 'W':
+            self.moveCptVertical(-1)
+        elif direction == 'S':
+            self.moveCptVertical(1)
+        elif direction == 'A':
+            self.moveCptHorizontal(-1)
+        elif direction == 'D':
+            self.moveCptHorizontal(1)
+        else:
+            print("Invalid input. Please enter W, S, A, or D.")
+
+    def gameOver(self):
+        print("Game Over!")
+        print("Vegetables harvested:")
+        for veggie in self._captain.getVeggiesHarvested():
+            print(f"{veggie.getName()} ({veggie.getSymbol()})")
+        print(f"Your score: {self._score}")
+
+    def highScore(self):
+        pass
 
 
-        def intro(self):
-            print("Welcome to the Vegetable Harvest Game!")
-            print("Premise and Goal: Harvest as many vegetables as you can while avoiding rabbits.")
-            print("List of possible vegetables:")
-            for veggie in self._all_possible_vegetables:
-                print(f"{veggie.getSymbol()} - {veggie.getName()} (Points: {veggie.getPoints()})")
-            print(f"Captain's symbol: {self._captain.getSymbol()}")
-            print(f"Rabbit's symbol: {Rabbit().getSymbol()}")
 
-        def printField(self):
-            for row in self._field:
-                print("|", end="")
-                for cell in row:
-                    if cell is None:
-                        print("   ", end="|")
-                    else:
-                        print(f" {cell.getSymbol()} ", end="|")
-                print()
-                print("|---" * len(row) + "|")
-
-        def getScore(self) -> int:
-            return self._score
+# For debugging
+# engine = GameEngine()
+# engine.initializeGame()
