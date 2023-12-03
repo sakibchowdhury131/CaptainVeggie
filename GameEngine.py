@@ -174,3 +174,27 @@ class GameEngine:
         def remainingVeggies(self) -> int:
             count = sum(row.count(None) for row in self._field)
             return self.NUMBEROFVEGGIES - count
+
+
+        def intro(self):
+            print("Welcome to the Vegetable Harvest Game!")
+            print("Premise and Goal: Harvest as many vegetables as you can while avoiding rabbits.")
+            print("List of possible vegetables:")
+            for veggie in self._all_possible_vegetables:
+                print(f"{veggie.getSymbol()} - {veggie.getName()} (Points: {veggie.getPoints()})")
+            print(f"Captain's symbol: {self._captain.getSymbol()}")
+            print(f"Rabbit's symbol: {Rabbit().getSymbol()}")
+
+        def printField(self):
+            for row in self._field:
+                print("|", end="")
+                for cell in row:
+                    if cell is None:
+                        print("   ", end="|")
+                    else:
+                        print(f" {cell.getSymbol()} ", end="|")
+                print()
+                print("|---" * len(row) + "|")
+
+        def getScore(self) -> int:
+            return self._score
