@@ -1,7 +1,7 @@
 import os
 import random
 from Veggie import Veggie
-from captain import Captain
+from Captain import Captain
 from Rabbit import Rabbit
 
 
@@ -44,7 +44,7 @@ class GameEngine:
             data = line.strip().split(',')
             veggie_name = data[0]
             veggie_symbol = data[1]
-            veggie_point = data[2]
+            veggie_point = int(data[2])
             obj = Veggie(veggie_name, veggie_symbol, veggie_point)
             self._all_possible_vegetables.append(obj)
 
@@ -98,7 +98,7 @@ class GameEngine:
             location_h = random.randrange(0, field_size_height)
             location_w = random.randrange(0, field_size_width)
         
-        self._captain = captain(location_h, location_w)
+        self._captain = Captain(location_h, location_w)
         self._field[location_h][location_w] = self._captain
 
         '''
@@ -203,39 +203,188 @@ class GameEngine:
 
     def moveRabbits(self):
         for rabbit in self._rabbits_in_the_field:
-            rabbit.move(self._field)
+            # Save the current location of the rabbit
+            current_location = (rabbit.get_x(), rabbit.get_y())
 
-    def moveCptVertical(self, movement):
-        self._captain.moveVertical(movement, self._field, self._all_possible_vegetables, self._score)
+            # Attempt to move the rabbit in a random direction
+            new_location = self.getRandomMove(current_location)
 
-    def moveCptHorizontal(self, movement):
-        self._captain.moveHorizontal(movement, self._field, self._all_possible_vegetables, self._score)
+            # Check if the new location is within the field boundaries
+            if self.isWithinBoundaries(new_location):
+                new_x, new_y = new_location
+
+                # Check if the new location is occupied by another rabbit or captain
+                if not self.isOccupied(new_location):
+                    # Update the field with the new location
+                    self._field[current_location[0]][current_location[1]] = None
+                    self._field[new_x][new_y] = rabbit
+
+                    # Update the rabbit's location
+                    rabbit.set_x(new_x)
+                    rabbit.set_y(new_y)
+                else:
+                    # Rabbit forfeits its move if the new location is occupied
+                    pass
+
+    def getRandomMove(self, current_location):
+        x, y = current_location
+        # Generate random move (up, down, left, right, diagonal, or no move)
+        new_x = x + random.choice([-1, 0, 1])
+        new_y = y + random.choice([-1, 0, 1])
+
+        return new_x, new_y
+
+    def isWithinBoundaries(self, location):
+        x, y = location
+        return 0 <= x < len(self._field) and 0 <= y < len(self._field[0])
+
+    def isOccupied(self, location):
+        x, y = location
+        return self._field[x][y] is not None
+    
+
+
+    def moveCptVertical(self, vertical_movement):
+        captain = self._captain
+        current_location = (captain.get_x(), captain.get_y())
+        new_location = (current_location[0] + vertical_movement, current_location[1])
+
+        if self.isWithinBoundaries(new_location):
+            if not self.isOccupied(new_location):
+                # Move Captain to an empty slot
+                self.moveCaptainInField(current_location, new_location)
+            elif isinstance(self._field[new_location[0]][new_location[1]], Veggie):
+                # Move Captain to a space occupied by a Veggie
+                self.collectVeggie(current_location, new_location)
+            elif isinstance(self._field[new_location[0]][new_location[1]], Rabbit):
+                # Inform the player not to step on rabbits
+                print("Oops! You should not step on the rabbits. Try a different move.")
+        else:
+            print("Oops! Movement would go beyond field boundaries.")
+
+    def moveCaptainInField(self, current_location, new_location):
+        # Update Captain's member variables
+        self._captain.set_x(new_location[0])
+        self._captain.set_y(new_location[1])
+
+        # Update field
+        self._field[current_location[0]][current_location[1]] = None
+        self._field[new_location[0]][new_location[1]] = self._captain
+
+    def collectVeggie(self, current_location, new_location):
+        # Update Captain's member variables
+        self._captain.set_x(new_location[0])
+        self._captain.set_y(new_location[1])
+
+        # Collect Veggie details
+        veggie = self._field[new_location[0]][new_location[1]]
+        veggie_name = veggie.get_name()
+        veggie_point_value = veggie.get_points()
+
+        # Output message
+        print(f"Delicious vegetable found: {veggie_name}! You earned {veggie_point_value} points.")
+
+        # Add Veggie to Captain's List of Veggies
+        self._captain.addVeggie(veggie)
+
+        # Increment the score
+        self._score += veggie_point_value
+
+        # Update field
+        self._field[current_location[0]][current_location[1]] = None
+        self._field[new_location[0]][new_location[1]] = self._captain
+
+    def moveCptHorizontal(self, horizontal_movement):
+        captain = self._captain
+        current_location = (captain.get_x(), captain.get_y())
+        new_location = (current_location[0], current_location[1] + horizontal_movement)
+
+        if self.isWithinBoundaries(new_location):
+            if not self.isOccupied(new_location):
+                # Move Captain to an empty slot
+                self.moveCaptainInField(current_location, new_location)
+            elif isinstance(self._field[new_location[0]][new_location[1]], Veggie):
+                # Move Captain to a space occupied by a Veggie
+                self.collectVeggie(current_location, new_location)
+            elif isinstance(self._field[new_location[0]][new_location[1]], Rabbit):
+                # Inform the player not to step on rabbits
+                print("Oops! You should not step on the rabbits. Try a different move.")
+        else:
+            print("Oops! Movement would go beyond field boundaries.")
+
 
     def moveCaptain(self):
-        direction = input("Enter the direction to move the Captain (W for Up, S for Down, A for Left, D for Right): ").upper()
-        if direction == 'W':
-            self.moveCptVertical(-1)
-        elif direction == 'S':
-            self.moveCptVertical(1)
-        elif direction == 'A':
-            self.moveCptHorizontal(-1)
-        elif direction == 'D':
-            self.moveCptHorizontal(1)
-        else:
-            print("Invalid input. Please enter W, S, A, or D.")
+        direction = input("Enter the direction to move the Captain (W/A/S/D): ").lower()
 
+        if direction == 'w':
+            self.moveCptVertical(-1)  # Move up
+        elif direction == 's':
+            self.moveCptVertical(1)   # Move down
+        elif direction == 'a':
+            self.moveCptHorizontal(-1)  # Move left
+        elif direction == 'd':
+            self.moveCptHorizontal(1)   # Move right
+        else:
+            print("Invalid input. Please enter W, A, S, or D.")
+
+    
     def gameOver(self):
         print("Game Over!")
-        print("Vegetables harvested:")
-        for veggie in self._captain.getVeggiesHarvested():
-            print(f"{veggie.getName()} ({veggie.getSymbol()})")
-        print(f"Your score: {self._score}")
+        
+        # Output harvested vegetables
+        veggies_collected = self._captain.get_veggies_collected()
+        if not veggies_collected:
+            print("You didn't harvest any vegetables.")
+        else:
+            print("You harvested the following vegetables:")
+            for veggie in veggies_collected:
+                print(f"- {veggie.get_name()}")
 
-    def highScore(self):
-        pass
+        # Output player's score
+        print(f"Your final score is: {self._score}")
+
+
+    # def moveCptVertical(self, movement):
+    #     self._captain.moveVertical(movement, self._field, self._all_possible_vegetables, self._score)
+
+    # def moveCptHorizontal(self, movement):
+    #     self._captain.moveHorizontal(movement, self._field, self._all_possible_vegetables, self._score)
+
+    # def moveCaptain(self):
+    #     direction = input("Enter the direction to move the Captain (W for Up, S for Down, A for Left, D for Right): ").upper()
+    #     if direction == 'W':
+    #         self.moveCptVertical(-1)
+    #     elif direction == 'S':
+    #         self.moveCptVertical(1)
+    #     elif direction == 'A':
+    #         self.moveCptHorizontal(-1)
+    #     elif direction == 'D':
+    #         self.moveCptHorizontal(1)
+    #     else:
+    #         print("Invalid input. Please enter W, S, A, or D.")
+
+    # def gameOver(self):
+    #     print("Game Over!")
+    #     print("Vegetables harvested:")
+    #     for veggie in self._captain.getVeggiesHarvested():
+    #         print(f"{veggie.getName()} ({veggie.getSymbol()})")
+    #     print(f"Your score: {self._score}")
+
+    # def highScore(self):
+    #     pass
 
 
 
 # For debugging
-# engine = GameEngine()
-# engine.initializeGame()
+engine = GameEngine()
+engine.initializeGame()
+engine.printField()
+print()
+print()
+engine.moveRabbits()
+engine.printField()
+print()
+print()
+engine.moveCaptain()
+engine.printField()
+engine.gameOver()
