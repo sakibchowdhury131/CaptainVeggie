@@ -1,3 +1,8 @@
+# Author: Vedanth Sirimalla
+# Date: 11/26/2023
+# Description: The Veggie class, a subclass of FieldInhabitant, represents a vegetable
+# with attributes such as name, symbol, and point value.
+
 from FieldInhabitant import FieldInhabitant
 
 class Veggie(FieldInhabitant):

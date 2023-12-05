@@ -1,3 +1,8 @@
+# Author: Vedanth Sirimalla
+# Date: 11/26/2023
+# Description: The Creature class is a subclass of FieldInhabitant, it is a creature on the game field,
+# defined by x and y coordinates.
+
 from FieldInhabitant import FieldInhabitant
 
 class Creature(FieldInhabitant):
