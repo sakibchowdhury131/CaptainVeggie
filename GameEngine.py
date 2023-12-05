@@ -1,7 +1,7 @@
 import os
 import random
 from Veggie import Veggie
-from captain import Captain
+from Captain import Captain
 from Rabbit import Rabbit
 
 

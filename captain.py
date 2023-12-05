@@ -19,6 +19,31 @@ class Captain(Creature):
     def set_veggies_collected(self, veggies_collected):
         self._veggies_collected = veggies_collected
 
+    def moveVertical(self, movement, field, veggies, score):
+        new_x, new_y = self._x, self._y + movement
+        self._move_logic(new_x, new_y, field, veggies, score)
+
+    def moveHorizontal(self, movement, field, veggies, score):
+        new_x, new_y = self._x + movement, self._y
+        self._move_logic(new_x, new_y, field, veggies, score)
+
+    def _move_logic(self, new_x, new_y, field, veggies, score):
+        if 0 <= new_x < len(field) and 0 <= new_y < len(field[0]):
+            if field[new_x][new_y] is None:
+                field[self._x][self._y], field[new_x][new_y] = None, self
+                self._x, self._y = new_x, new_y
+            elif isinstance(field[new_x][new_y], Veggie):
+                veggie = field[new_x][new_y]
+                self.addVeggie(veggie)
+                print(f"Delicious vegetable found: {veggie.getName()}! Score +{veggie.get_points()}")
+                score += veggie.get_points()
+                field[self._x][self._y], field[new_x][new_y] = None, self
+                self._x, self._y = new_x, new_y
+            elif isinstance(field[new_x][new_y], Rabbit):
+                print("Oops! Don't step on the rabbits.")
+        else:
+            print("Invalid move. Captain cannot move outside the boundaries.")   
+
     # Other getter/setter functions for x and y
     def get_x(self):
         return self._x
