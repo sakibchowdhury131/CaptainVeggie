@@ -173,6 +173,10 @@ class GameEngine:
         '''
 
     def remainingVeggies(self):
+        """
+          This function counts the number of vegetables still present in the game field.
+            Returns: The number of veggies remaining.
+          """
         count = 0
         for row in self._field:
             for item in row:
@@ -180,23 +184,33 @@ class GameEngine:
                     count += 1
         return count
 
+
     def intro(self):
-        print("Welcome to the Veggie Harvest Game!")
-        print("The goal of the game is to harvest as many vegetables as you can while avoiding rabbits.")
+        """
+        This function prints a welcome message, explains the goal of the game, and provides details about
+        possible vegetables, Captain Veggie, and rabbits.
+        """
+        print("Welcome to the Captain Veggie Game!")
+        print("In this game, your goal is to harvest as many vegetables as you can while avoiding rabbits.")
         print("Here are the possible vegetables and their symbols:")
         for veggie in self._all_possible_vegetables:
             print(f"Symbol: {veggie.getFieldInhabitant()}, Name: {veggie.get_name()}, Points: {veggie.get_points()}")
         print(f"Captain Veggie symbol: {self._captain.getFieldInhabitant()}")
         print("Rabbit symbol: R")
-        print("Let the harvest begin!")
+        print("\nLet the harvest begin!")
 
     def printField(self):
+        """
+        This function iterates through the game field, printing the symbol of each field inhabitant
+        or a pipe '|' character if the cell is empty. The output forms a 2D grid with a border around
+        the entire grid.
+        """
         for row in self._field:
             for item in row:
                 if item is None:
-                    print('0', end=' ')
+                    print('|', end="")
                 else:
-                    print(item.getFieldInhabitant(), end=' ')
+                    print(item.getFieldInhabitant(), end="|")
             print()
 
     def getScore(self):
