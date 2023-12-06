@@ -185,8 +185,8 @@ class GameEngine:
         print("The goal of the game is to harvest as many vegetables as you can while avoiding rabbits.")
         print("Here are the possible vegetables and their symbols:")
         for veggie in self._all_possible_vegetables:
-            print(f"Symbol: {veggie.getSymbol()}, Name: {veggie.getName()}, Points: {veggie.getPointValue()}")
-        print(f"Captain Veggie symbol: {self._captain.getSymbol()}")
+            print(f"Symbol: {veggie.getFieldInhabitant()}, Name: {veggie.get_name()}, Points: {veggie.get_points()}")
+        print(f"Captain Veggie symbol: {self._captain.getFieldInhabitant()}")
         print("Rabbit symbol: R")
         print("Let the harvest begin!")
 
@@ -424,17 +424,17 @@ class GameEngine:
 
 
 
-# For debugging
-engine = GameEngine()
-engine.initializeGame()
-engine.printField()
-print()
-print()
-engine.moveRabbits()
-engine.printField()
-print()
-print()
-engine.moveCaptain()
-engine.printField()
-engine.gameOver()
-engine.highScore()
+# # For debugging
+# engine = GameEngine()
+# engine.initializeGame()
+# engine.printField()
+# print()
+# print()
+# engine.moveRabbits()
+# engine.printField()
+# print()
+# print()
+# engine.moveCaptain()
+# engine.printField()
+# engine.gameOver()
+# engine.highScore()
