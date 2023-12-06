@@ -208,9 +208,9 @@ class GameEngine:
         for row in self._field:
             for item in row:
                 if item is None:
-                    print('|', end="")
+                    print('0', end=" ")
                 else:
-                    print(item.getFieldInhabitant(), end="|")
+                    print(item.getFieldInhabitant(), end=" ")
             print()
 
     def getScore(self):
