@@ -1,5 +1,6 @@
 import os
 import random
+import pickle
 from Veggie import Veggie
 from Captain import Captain
 from Rabbit import Rabbit
@@ -344,6 +345,54 @@ class GameEngine:
         print(f"Your final score is: {self._score}")
 
 
+    def highScore(self):
+        high_scores = []
+
+        # Check if the highscore.data file exists
+        if os.path.exists(self.__HIGHSCOREFILE):
+            try:
+                # Open the file for binary reading
+                with open(self.__HIGHSCOREFILE, 'rb') as file:
+                    # Unpickle the file into the List of high scores
+                    high_scores = pickle.load(file)
+            except Exception as e:
+                print(f"Error reading high scores: {e}")
+
+        # Prompt the user for their initials and extract the first 3 characters
+        player_initials = input("Enter your initials: ")[:3]
+
+        # Create a Tuple with the player’s initials and score
+        player_score = (player_initials, self._score)
+
+        if not high_scores:
+            # If there are no high scores yet recorded, add the Tuple to the List
+            high_scores.append(player_score)
+        else:
+            # Add the Tuple to the correct position in the List to maintain descending order
+            index_to_insert = 0
+            for index, (initials, score) in enumerate(high_scores):
+                if self._score > score:
+                    index_to_insert = index
+                    break
+                else:
+                    index_to_insert = index + 1
+
+            high_scores.insert(index_to_insert, player_score)
+
+        # Output all of the high scores
+        print("High Scores:")
+        for rank, (initials, score) in enumerate(high_scores, start=1):
+            print(f"{rank}. {initials}: {score}")
+
+        try:
+            # Open the highscore.data file for binary writing
+            with open(self.__HIGHSCOREFILE, 'wb') as file:
+                # Pickle the List of high scores to the file
+                pickle.dump(high_scores, file)
+        except Exception as e:
+            print(f"Error writing high scores: {e}")
+
+
     # def moveCptVertical(self, movement):
     #     self._captain.moveVertical(movement, self._field, self._all_possible_vegetables, self._score)
 
@@ -388,3 +437,4 @@ print()
 engine.moveCaptain()
 engine.printField()
 engine.gameOver()
+engine.highScore()
