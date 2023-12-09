@@ -218,32 +218,26 @@ class GameEngine:
 
     def moveRabbits(self):
         for rabbit in self._rabbits_in_the_field:
-            # Save the current location of the rabbit
             current_location = (rabbit.get_x(), rabbit.get_y())
-
-            # Attempt to move the rabbit in a random direction
             new_location = self.getRandomMove(current_location)
 
-            # Check if the new location is within the field boundaries
-            if self.isWithinBoundaries(new_location):
+            
+            if self.isWithinBoundaries(new_location):   # Check if the new location is within the field boundaries
                 new_x, new_y = new_location
 
-                # Check if the new location is occupied by another rabbit or captain
-                if not self.isOccupied(new_location):
-                    # Update the field with the new location
+                
+                if not self.isOccupied(new_location):       # Check if the new location is occupied by another rabbit or captain
                     self._field[current_location[0]][current_location[1]] = None
                     self._field[new_x][new_y] = rabbit
 
-                    # Update the rabbit's location
                     rabbit.set_x(new_x)
                     rabbit.set_y(new_y)
                 else:
-                    # Rabbit forfeits its move if the new location is occupied
                     pass
 
     def getRandomMove(self, current_location):
         x, y = current_location
-        # Generate random move (up, down, left, right, diagonal, or no move)
+        # Generate random move
         new_x = x + random.choice([-1, 0, 1])
         new_y = y + random.choice([-1, 0, 1])
 
@@ -266,13 +260,10 @@ class GameEngine:
 
         if self.isWithinBoundaries(new_location):
             if not self.isOccupied(new_location):
-                # Move Captain to an empty slot
                 self.moveCaptainInField(current_location, new_location)
             elif isinstance(self._field[new_location[0]][new_location[1]], Veggie):
-                # Move Captain to a space occupied by a Veggie
                 self.collectVeggie(current_location, new_location)
             elif isinstance(self._field[new_location[0]][new_location[1]], Rabbit):
-                # Inform the player not to step on rabbits
                 print("Oops! You should not step on the rabbits. Try a different move.")
         else:
             print("Oops! Movement would go beyond field boundaries.")
@@ -290,22 +281,13 @@ class GameEngine:
         # Update Captain's member variables
         self._captain.set_x(new_location[0])
         self._captain.set_y(new_location[1])
-
-        # Collect Veggie details
         veggie = self._field[new_location[0]][new_location[1]]
         veggie_name = veggie.get_name()
         veggie_point_value = veggie.get_points()
-
-        # Output message
         print(f"Delicious vegetable found: {veggie_name}! You earned {veggie_point_value} points.")
-
-        # Add Veggie to Captain's List of Veggies
         self._captain.addVeggie(veggie)
-
-        # Increment the score
         self._score += veggie_point_value
 
-        # Update field
         self._field[current_location[0]][current_location[1]] = None
         self._field[new_location[0]][new_location[1]] = self._captain
 
@@ -323,9 +305,9 @@ class GameEngine:
                 self.collectVeggie(current_location, new_location)
             elif isinstance(self._field[new_location[0]][new_location[1]], Rabbit):
                 # Inform the player not to step on rabbits
-                print("Oops! You should not step on the rabbits. Try a different move.")
+                print("You should not step on the rabbits.")
         else:
-            print("Oops! Movement would go beyond field boundaries.")
+            print("Movement would go beyond field boundaries.")
 
 
     def moveCaptain(self):
@@ -345,8 +327,7 @@ class GameEngine:
     
     def gameOver(self):
         print("Game Over!")
-        
-        # Output harvested vegetables
+    
         veggies_collected = self._captain.get_veggies_collected()
         if not veggies_collected:
             print("You didn't harvest any vegetables.")
@@ -354,26 +335,19 @@ class GameEngine:
             print("You harvested the following vegetables:")
             for veggie in veggies_collected:
                 print(f"- {veggie.get_name()}")
-
-        # Output player's score
         print(f"Your final score is: {self._score}")
 
 
     def highScore(self):
         high_scores = []
-
-        # Check if the highscore.data file exists
         if os.path.exists(self.__HIGHSCOREFILE):
             try:
-                # Open the file for binary reading
                 with open(self.__HIGHSCOREFILE, 'rb') as file:
-                    # Unpickle the file into the List of high scores
                     high_scores = pickle.load(file)
             except Exception as e:
                 print(f"Error reading high scores: {e}")
 
-        # Prompt the user for their initials and extract the first 3 characters
-        player_initials = input("Enter your initials: ")[:3]
+        player_initials = input("Enter the first three letters of your name: ")[:3]
 
         # Create a Tuple with the player’s initials and score
         player_score = (player_initials, self._score)
